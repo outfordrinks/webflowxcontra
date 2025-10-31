@@ -168,6 +168,13 @@ function setupLighting(scene) {
   scene.add(new THREE.HemisphereLight(lighting.hemisphere.color, lighting.hemisphere.groundColor, lighting.hemisphere.intensity));
   const mainLight = new THREE.DirectionalLight(lighting.main.color, lighting.main.intensity);
   mainLight.position.set(lighting.main.position.x, lighting.main.position.y, lighting.main.position.z);
+  mainLight.castShadow = true;
+  mainLight.shadow.mapSize.width = lighting.main.shadow.mapSize;
+  mainLight.shadow.mapSize.height = lighting.main.shadow.mapSize;
+  mainLight.shadow.camera.near = lighting.main.shadow.near;
+  mainLight.shadow.camera.far = lighting.main.shadow.far;
+  mainLight.shadow.radius = lighting.main.shadow.radius;
+  mainLight.shadow.bias = lighting.main.shadow.bias;
   scene.add(mainLight);
   const rimLight = new THREE.DirectionalLight(lighting.rim.color, lighting.rim.intensity);
   rimLight.position.set(lighting.rim.position.x, lighting.rim.position.y, lighting.rim.position.z);
@@ -199,6 +206,15 @@ function applyMaterialsToModel(template, textures) {
         child.material.metalness = CONFIG.materials.metalness;
       }
       child.material.needsUpdate = true;
+    }
+  });
+}
+
+function setupMeshShadows(mesh) {
+  mesh.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
     }
   });
 }
@@ -237,6 +253,7 @@ gltfLoader.load(CONFIG.model.path, (gltf) => {
       const visualRadius3D = heart.visualRadius / pixelsPerUnit;
       const scale = (visualRadius3D * 2) / modelMaxDimension;
       mesh.scale.set(scale, scale, scale);
+      setupMeshShadows(mesh);
       scene.add(mesh);
       heart.mesh = mesh;
     });
@@ -246,6 +263,9 @@ gltfLoader.load(CONFIG.model.path, (gltf) => {
 window.addEventListener("resize", () => {
   viewport.width = window.innerWidth;
   viewport.height = window.innerHeight;
+  physicsLayers.forEach(layerData => {
+    updatePhysicsBoundaries(layerData.boundaries, viewport);
+  });
   camera.aspect = viewport.width / viewport.height;
   camera.updateProjectionMatrix();
   renderer.setSize(viewport.width, viewport.height);
