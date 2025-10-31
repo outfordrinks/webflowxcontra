@@ -29,23 +29,23 @@ const CONFIG = {
     }
   },
   lighting: {
-    hemisphere: { color: 0xfff5e6, groundColor: 0xffd4e6, intensity: 1.8 },
+    hemisphere: { color: 0xfff5e6, groundColor: 0xffd4e6, intensity: 1.2 },
     main: {
-      color: 0xfff5e6, intensity: 2.8,
+      color: 0xfff5e6, intensity: 1.8,
       position: { x: 3, y: 5, z: 4 },
       shadow: { mapSize: 4096, near: 0.5, far: 20, radius: 2, bias: -0.0001 }
     },
-    rim: { color: 0xffd9e6, intensity: 2.0, position: { x: -4, y: 2, z: -3 } },
-    fill: { color: 0xffe8f0, intensity: 1.4, position: { x: -2, y: 3, z: -2 } },
-    ambient: { color: 0xffffff, intensity: 0.7 }
+    rim: { color: 0xffd9e6, intensity: 1.3, position: { x: -4, y: 2, z: -3 } },
+    fill: { color: 0xffe8f0, intensity: 1.0, position: { x: -2, y: 3, z: -2 } },
+    ambient: { color: 0xffffff, intensity: 0.4 }
   },
   renderer: {
     toneMapping: THREE.ACESFilmicToneMapping,
-    toneMappingExposure: 1.3,
+    toneMappingExposure: 1.0,
     shadowMap: { enabled: true, type: THREE.PCFSoftShadowMap },
     dithering: true
   },
-  materials: { aoMapIntensity: 0.5, textureAnisotropy: 8 },
+  materials: { aoMapIntensity: 0.7, textureAnisotropy: 8, roughness: 0.85, metalness: 0.0 },
   textures: {
     roughness: "https://cdn.jsdelivr.net/gh/outfordrinks/webflowxcontra@main/Grass005_2K-JPG_Roughness.jpg",
     ao: "https://cdn.jsdelivr.net/gh/outfordrinks/webflowxcontra@main/Grass005_2K-JPG_AmbientOcclusion.jpg"
@@ -192,6 +192,12 @@ function applyMaterialsToModel(template, textures) {
       child.material.roughnessMap = textures.roughnessMap;
       child.material.aoMap = textures.aoMap;
       child.material.aoMapIntensity = CONFIG.materials.aoMapIntensity;
+      if (CONFIG.materials.roughness !== undefined) {
+        child.material.roughness = CONFIG.materials.roughness;
+      }
+      if (CONFIG.materials.metalness !== undefined) {
+        child.material.metalness = CONFIG.materials.metalness;
+      }
       child.material.needsUpdate = true;
     }
   });
@@ -248,3 +254,4 @@ window.addEventListener("resize", () => {
 renderer.setAnimationLoop(() => {
   renderer.render(scene, camera);
 });
+
