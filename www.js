@@ -12,7 +12,7 @@ import { DRACOLoader } from "https://esm.sh/three@0.166.0/examples/jsm/loaders/D
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.3);
+    background: #0273F3;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 99999;
@@ -36,15 +36,19 @@ import { DRACOLoader } from "https://esm.sh/three@0.166.0/examples/jsm/loaders/D
   style.textContent = `
     @keyframes blink {
       0%, 100% {
-        opacity: 1;
         transform: scale(1);
       }
       50% {
-        opacity: 0.3;
         transform: scale(0.8);
       }
     }
   `;
+  
+  // Блокируем скролл
+  const originalOverflow = document.body.style.overflow;
+  const originalHeight = document.body.style.height;
+  document.body.style.overflow = 'hidden';
+  document.body.style.height = '100vh';
   
   document.head.appendChild(style);
   preloader.appendChild(circle);
@@ -54,6 +58,9 @@ import { DRACOLoader } from "https://esm.sh/three@0.166.0/examples/jsm/loaders/D
     preloader.style.opacity = '0';
     setTimeout(() => {
       preloader.remove();
+      // Восстанавливаем скролл
+      document.body.style.overflow = originalOverflow || '';
+      document.body.style.height = originalHeight || '';
     }, 500);
   };
 })();
